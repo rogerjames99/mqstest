@@ -8,17 +8,31 @@
     caps and ground. This can be something like headphones or an amplifier input. 
 */
 
-AudioSynthWaveform waveform;
+#ifdef WAVEFORM
+AudioSynthWaveform input;
+#else
+AudioSynthToneSweep input;
+#endif
 
 AudioOutputMQS           audioOutput;  // T4
-AudioConnection          patchCord1(waveform, 0, audioOutput, 0);
-AudioConnection          patchCord2(waveform, 0, audioOutput, 1);
+AudioConnection          patchCord1(input, 0, audioOutput, 0);
+AudioConnection          patchCord2(input, 0, audioOutput, 1);
 
 void setup() {
   AudioMemory(8);
-  waveform.begin(WAVEFORM_SAWTOOTH);
-  waveform.frequency(440);
-  waveform.amplitude(0.9);
+#ifdef WAVEFORM
+  input.begin(WAVEFORM_SAWTOOTH);
+  input.frequency(440);
+  input.amplitude(0.9);
+#else
+while(true)
+{
+  input.play(0.9, 30, 3000, 10);
+  while(input.isPlaying());
+  input.play(0.9, 3000, 30, 10);
+  while(input.isPlaying());
+}
+#endif
 }
 
 
